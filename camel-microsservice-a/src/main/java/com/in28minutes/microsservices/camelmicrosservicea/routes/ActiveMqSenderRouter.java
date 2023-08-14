@@ -5,7 +5,7 @@ import java.util.Random;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class ActiveMqSenderRouter extends RouteBuilder{
 
 	@Override
