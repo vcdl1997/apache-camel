@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.dataformat.JsonLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -53,14 +52,32 @@ public class EipPatternsRouter extends RouteBuilder{
 		//;
 		
 		
+		// Aggregating Pattern
+		/*
+		 * Aggregating message contents into a single message
+		 * */
+		//from("file:C:\\Temp\\aggregate-json")
+		//.unmarshal().json(JsonLibrary.Jackson, CurrencyExchangeDto.class)
+		//.aggregate(simple("${body.to}"), new ArrayListAggregationStrategy())
+		//.completionSize(3)
+		//.completionTimeout(HIGHEST)
+		//.to("log:aggregate-json")
+		//;
 		
-		from("file:C:\\Temp\\aggregate-json")
-			.unmarshal().json(JsonLibrary.Jackson, CurrencyExchangeDto.class)
-			.aggregate(simple("${body.to}"), new ArrayListAggregationStrategy())
-			.completionSize(3)
-			//.completionTimeout(HIGHEST)
-			.to("log:aggregate-json")
+		
+		// Routing list Pattern
+		/*
+		 * Redirecting a test message to two endpoints at the same time
+		 * */
+		String routingSlip = "direct:endpoint1,direct:endpoint2";
+		
+		from("timer:routingSlip?period=10000")
+			.transform().constant("Teste")
+			.routingSlip(simple(routingSlip))
 		;
+		
+		from("direct:endpoint1").to("log:directendpoint1");
+		from("direct:endpoint2").to("log:directendpoint2");
 	}
 }
 
